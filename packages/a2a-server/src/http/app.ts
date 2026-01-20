@@ -327,8 +327,10 @@ export async function main() {
   try {
     const expressApp = await createApp();
     const port = Number(process.env['CODER_AGENT_PORT'] || 0);
+    // Allow binding to 0.0.0.0 for container deployments
+    const host = process.env['CODER_AGENT_HOST'] || 'localhost';
 
-    const server = expressApp.listen(port, 'localhost', () => {
+    const server = expressApp.listen(port, host, () => {
       const address = server.address();
       let actualPort;
       if (process.env['CODER_AGENT_PORT']) {
@@ -340,10 +342,10 @@ export async function main() {
       }
       updateCoderAgentCardUrl(Number(actualPort));
       logger.info(
-        `[CoreAgent] Agent Server started on http://localhost:${actualPort}`,
+        `[CoreAgent] Agent Server started on http://${host}:${actualPort}`,
       );
       logger.info(
-        `[CoreAgent] Agent Card: http://localhost:${actualPort}/.well-known/agent-card.json`,
+        `[CoreAgent] Agent Card: http://${host}:${actualPort}/.well-known/agent-card.json`,
       );
       logger.info('[CoreAgent] Press Ctrl+C to stop the server');
     });
