@@ -19,6 +19,7 @@ COPY . .
 # Install dependencies and build
 RUN npm ci && npm run build:packages
 
+
 # Expose the A2A server port
 EXPOSE 9000
 
