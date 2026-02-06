@@ -1,0 +1,27 @@
+FROM node:20-slim
+
+# Install required packages including build tools for native modules (node-pty)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  curl \
+  git \
+  python3 \
+  make \
+  g++ \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy everything and build
+# (Simpler than selective copy since workspaces need all package.json files)
+COPY . .
+
+# Install dependencies and build
+RUN npm ci && npm run build:packages
+
+
+# Expose the A2A server port
+EXPOSE 9000
+
+# Default command
+CMD ["node", "packages/a2a-server/dist/src/http/server.js"]
